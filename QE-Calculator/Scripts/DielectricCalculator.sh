@@ -50,6 +50,9 @@ sed -i "/^ecutwfc =/a nbnd = 8," $prefix.scfDielectric.in
 sed -i "/^nbnd =/a nosym = .true.," $prefix.scfDielectric.in
 sed -i "/^nbnd =/a nosym = .true.," $prefix.scfDielectric.in
 
+sed -i "s|plot \"eels_Si.dat\" using 1:2 w lines|plot \"eels_$prefix.dat\" using 1:2 w lines|g" EelsvsEV.gnu
+sed -i "s|plot \"epsi_Si.dat\" using 1:2 w lines, \"epsr_Si.dat\" using 1:2 w lines|plot \"epsi_$prefix.dat\" using 1:2 w lines, \"epsr_$prefix.dat\" using 1:2 w lines|g" EpsvsEV.gnu
+
 echo 'Running pw.x from optimized'
 echo '' > $prefix.scf.out
 currentfile=$prefix.scf.out

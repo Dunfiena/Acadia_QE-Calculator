@@ -4,16 +4,8 @@
 #  May 5th 2023
 #  Acadia Physics
 
-				####################################################
-				###						 ###
-				###   Section #1 - Setup and Configuration       ###
-				###						 ###
-				####################################################
 
-
-
-### 1.2 Setup test directory and files for program ###
-#pick calculation file#
+### 1.1 Setup test directory and files for program ###
 
 cd ../
 mkdir "$prefix.tmp"
@@ -30,24 +22,21 @@ mkdir $dirName/Totals
 mkdir $dirName/Graphs/Datafiles
 pwd
 cp ./QE-Calculator/InputFiles/$inputfile  ./$dirName/
-cp ./QE-Calculator/Graph.config/* ./$dirName/Graphs/
+cp ./QE-Calculator/SCF.config/* ./$dirName/Graphs/
 
 cd ./$dirName/
 echo -e "1  2  3\n2  3  4" >> ./Graphs/energy.dat
 echo -e "1  2  3\n2  3  4" >> ./Graphs/Kpoint.dat
 echo -e "1  2  3\n2  3  4"> ./Graphs/Datafiles/celldmtmp.dat
 
-### 1.3 Clean input files before run ###
+### 1.2 Clean input files before run ###
 echo "Clean input file"
-sed -i "s|^ecutwfc =.*|ecutwfc =|g" $inputfile
-sed -r -i "s|[0-9]{1} [0-9]{1} [0-9]{1} 1 1 1|2 2 2 1 1 1|g" $inputfile
-sed -r -i "s|[0-9]{2} [0-9]{2} [0-9]{2} 1 1 1|2 2 2 1 1 1|g" $inputfile
-sed -i "s|^celldm(1) =.*|celldm(1) = 10.2116,|g" $inputfile
+sed -i "s|^ecutwfc =.*,|ecutwfc = 40,|g" $inputfile
 
-### 1.4 Recursive array creation ###
+### 1.3 Recursive array creation ###
 
 # Adjustable section
-estop=0.03
+estop=0.003
 kstop=0.003
 
 energymin=10
@@ -85,37 +74,28 @@ do
 	Kpoints+=("$Kpointmin")
 done
 
-### 1.5 Declare global variables ###
+### 1.4 Declare global variables ###
 b=0
 e1=${Ecut[0]}
 k1=${Kpoints[0]}
 c1=${celldm[0]}
 
-				####################################################
-				###						 ###
-				###   Section #2 - Live plotting and Graphs      ###
-				###						 ###
-				####################################################
 
-### See liveplot.gnu ###
+### Section 2 - For multiplot info please see liveplot.gnu ###
 
-				####################################################
-				###						 ###
-				###   Section #3 - Program main body             ###
-				###						 ###
-				####################################################
+### Section 3 - Main Body
 
 Run(){
 
 #####
-### 3.1 Recursive loop for energy cutoff###
+### 3.1 Recursive loop for energy cutoff ###
 #####
 
 ### 3.1.1 Running calculations
 for i in "${Ecut[@]}"
 do
 	echo "Running for $i RY"
-	sed -i "s|^ecutwfc =.*|ecutwfc = $i|g" $inputfile
+	sed -i "s|^ecutwfc =.*,|ecutwfc = $i,|g" $inputfile
 	#mpirun -np 12 pw.x -in $inputfile > $prefix.scf.out$i	
 	pw.x -in $inputfile > $prefix.scf.out$i
 	
@@ -162,8 +142,8 @@ for i in "${Kpoints[@]}"
 do
 	echo "Running for $i KPoints"
 
-	sed -r -i "s|[0-9]{1} [0-9]{1} [0-9]{1} 1 1 1|$i $i $i 1 1 1|g" $inputfile
-	sed -r -i "s|[0-9]{2} [0-9]{2} [0-9]{2} 1 1 1|$i $i $i 1 1 1|g" $inputfile
+	sed -r -i "s|[1-9]+\s[1-9]+\s[1-9]+\s|$i $i $i |g" $inputfile
+	sed -r -i "s|[1-9]+\s[1-9]+\s[1-9]+\s|$i $i $i |g" $inputfile
 	#mpirun -np 12 pw.x -in $inputfile > $prefix.scf.Kout$i
 	pw.x -in $inputfile > $prefix.scf.Kout$i
 	
@@ -249,11 +229,8 @@ done
 cd ./Graphs
 ev.x < evxcalc.tmp
 
-				####################################################
-				###						 ###
-				###   Section #4 - Final Graph creation          ###
-				###						 ###
-				####################################################
+
+### Section #4 - Final Graph creation ###
 
 #####
 ###Gnuplot for dat files
@@ -277,12 +254,7 @@ gnuplot < EnergyvsLattice.gnu
 kill $processID
 }
 
-				####################################################
-				###						 ###
-				###   Section #5 - Execute and clean    	 ###
-				###						 ###
-				####################################################
-
+### Section #5 - Execute and clean ###
 gnuplot ./Graphs/liveplot.gnu &
 processID=$!
 sleep 1

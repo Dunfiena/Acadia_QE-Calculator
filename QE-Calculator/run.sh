@@ -5,7 +5,7 @@
 #  Acadia Physics
 
 
-### 1.1 Check programs and set up to ensure working system ###
+### 1 Check programs and setup ###
 GPlot=`which gnuplot 2> /dev/null`
 if [ "$GPlot" = "" ]; then
 	echo "Gnuplot is missing, if you want to plot the data output please install gnuplot using sudo apt install gnuplot"
@@ -13,7 +13,10 @@ else
 	echo "Gnuplot located"
 fi
 
-### 1.2 Configure run parameters ###
+### End of check ###
+
+
+### 2 Configure run parameters ###
 echo "What is the run state"
 echo "(1) - Run full"
 echo "(2) - Run Self-Consistent Funtional Calculation"
@@ -24,14 +27,29 @@ echo "(5) - Run Dielectric Calculation"
 read path
 export path
 
-echo "Enter the prefix being used (i.e., Si)"
+echo "Enter the number of unique atoms (i.e, for SiO2 enter 2)"
+read numAtom
+if (($numAtom > 1)); then
+	for (( i=0; i<$numAtom; i++ ))
+	do
+		echo "Enter the prefix being used (i.e., Si)"
+		read atom$i
+	done
+fi
+echo "$atom0"
+echo "$atom1"
+
+echo "Please enter prefix"
 read prefix
+
+if ls ./Pseudo-Potential/$atom0.* && ls ./Pseudo-Potential/$atom1.*; then
 export prefix
 
 d=$(date +"%Y.%m.%d_%H.%M.%S")
 dirName="$prefix-test$d"
 mkdir ../$dirName
 
+### 3 Run functions ###
 RunFull(){
 echo "Running SCF Optimization Calculations"
 ./Scripts/SCFCalculator.sh
@@ -49,25 +67,29 @@ echo "Running Dielectric Calculations"
 mv ../$prefix* ../$dirName
 }
 
-### 1.3 Individual runs ###
+
 RunSCF(){
 echo "Running SCF Optimization Calculations"
 ./Scripts/SCFCalculator.sh
+mv ../$prefix* ../$dirName
 }
 
 RunBands(){
 echo "Running Band Calculations"
 ./Scripts/BandsCalculator.sh
+mv ../$prefix* ../$dirName
 }
 
 RunPhonon(){
 echo "Running Phonon Calculations"
 ./Scripts/PhononCalculator.sh
+mv ../$prefix* ../$dirName
 }
 
 RunDielectric(){
 echo "Running Dielectric Calculations"
 ./Scripts/DielectricCalculator.sh
+mv ../$prefix* ../$dirName
 }
 
 case $path in
@@ -106,3 +128,7 @@ case $path in
 	kill $process
 	;;
 esac
+
+else
+	echo "File not found"
+fi

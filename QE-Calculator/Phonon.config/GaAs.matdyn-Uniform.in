@@ -1,0 +1,10 @@
+&INPUT
+  asr = 'simple',
+  dos = .true.
+  amass(1) = 26.9815
+  flfrc = 'GaAs.fc',
+  flfrq = 'GaAs.freq',
+  fldos = 'GaAs.phdos',
+  q_in_band_form = .true.,
+  nk1=2, nk2=2, nk3=2
+/

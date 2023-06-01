@@ -9,5 +9,4 @@ unset key
 set xr [*:*]
 set yr [*:*]
 set border 3
-plot "epsi_Si.dat" using 1:2 w lines, \
- "epsr_Si.dat" using 1:2 w lines
+plot "epsi_Si.dat" using 1:2 w lines, "epsr_Si.dat" using 1:2 w lines

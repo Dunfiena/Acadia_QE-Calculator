@@ -4,18 +4,11 @@
 #  May 14th 2023
 #  Acadia Physics
 
-				####################################################
-				###						 ###
-				###   Section #1 - Setup and Configuration       ###
-				###						 ###
-				####################################################
+### Section 1 - Setup and Configuration ###
 
-### Create and populate Phonon directory
-readout(){
-xterm -e "tail -f '$currentfile'" &
-}
-Phonon(){
-cd ..
+###1.1  Create and populate Phonon directory
+
+cd ../
 dirName="$prefix-PhononCalculation"
 mkdir $dirName
 mkdir ./$dirName/Ephemera
@@ -23,6 +16,7 @@ mkdir ./$dirName/GraphFiles
 mkdir ./$dirName/OutFiles
 mkdir ./$dirName/DynFiles
 
+### 1.2 check run state and get input file
 case $path in
 	1)
 	cp ./$prefix.tmp/*.in ./$dirName
@@ -35,6 +29,22 @@ esac
 
 cp ./QE-Calculator/Phonon.config/* ./$dirName
 cd ./$dirName
+
+### 1.3 configure input file
+sed -i "s/Si.freqNU.gp/$prefix.freqNU.gp/g" DispersionRelation.plot.gnu
+sed -i "s/Density of state of Si Crystal/Density of state of $prefix Crystal/g" DOS.plot.gnu
+sed -i "s/Si.phdos/$prefix.phdos/g" DOS.plot.gnu
+sed -i "s/Si.fc/$prefix.fc/g" q2r.in
+
+
+### Main body
+### 2.1 Readout function
+readout(){
+xterm -e "tail -f '$currentfile'" &
+}
+
+Phonon(){
+### 2.2 Phonon calculation
 echo "Running pw.x"
 pw.x -in $prefix.scf.in > $prefix.scf.out
 
@@ -46,23 +56,20 @@ echo "Running ph.x"
 ph.x -in $prefix.ph.in > $prefix.ph.out
 kill $process
 
-echo '' > $prefix.q2r.out
-currentfile=$prefix.q2r.out
-readout
-process=$!
 echo "Running q2r"
-q2r.x -in $prefix.q2r.in > $prefix.q2r.out
-kill $process
+q2r.x -in q2r.in > q2r.out
 
 echo '' > $prefix.phdos
 currentfile=$prefix.phdos
 readout
 process=$!
 echo "Running matdyn"
-matdyn.x -in $prefix.matdyn-Uniform.in
-matdyn.x -in $prefix.matdyn-nonUniform.in
+matdyn.x -in $prefix.matdyn-Uniform.in > $prefix.matdyn-Uniform.out
+echo "Running maytdyn nonUniform"
+matdyn.x -in $prefix.matdyn-nonUniform.in > $prefix.matdyn-nonUniform.out
 kill $process
 
+### 2.3 Graph and cleanup
 gnuplot DOS.plot.gnu
 gnuplot DispersionRelation.plot.gnu
 

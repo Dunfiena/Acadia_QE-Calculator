@@ -1,22 +1,23 @@
 &CONTROL
 calculation = 'scf',
 pseudo_dir = '../QE-Calculator/Pseudo-Potential/'
-prefix = 'Si',
+prefix = 'GaAs',
 /
 &SYSTEM
 ibrav = 2,
 celldm(1) = 10.2116,
 nat = 2,
-ntyp = 1,
+ntyp = 2,
 ecutwfc = 40,
 /
 &ELECTRONS
 /conv_thr = 1.0d-12,
 /
 ATOMIC_SPECIES
-Si 28.086 Si.pz-vbc.UPF
+Ga 69.723 Ga.pbe-dn-kjpaw_psl.1.0.0.UPF
+As 74.9216 As.pbe-n-rrkjus_psl.0.2.UPF
 ATOMIC_POSITIONS alat
-Si 0.00 0.00 0.00
-Si 0.25 0.25 0.25
+Ga 0.00 0.00 0.00
+As 0.25 0.25 0.25
 K_POINTS automatic
 4 4 4 1 1 1
