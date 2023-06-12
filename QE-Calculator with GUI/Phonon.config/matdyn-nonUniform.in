@@ -1,0 +1,8 @@
+&INPUT
+  asr = 'simple',
+  amass(1) = 28.086
+  flfrc = 'Si.fc',
+  flfrq = 'Si.freqNU',
+  q_in_band_form = .true.,
+/
+

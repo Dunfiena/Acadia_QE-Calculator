@@ -1,0 +1,24 @@
+&CONTROL
+calculation = 'scf',
+pseudo_dir = '../QE-Calculator/Pseudo-Potential/'
+prefix = 'Al',
+/
+&SYSTEM
+ibrav = 2,
+celldm(1) = 7.6559,
+nat = 1,
+ntyp = 1,
+ecutwfc = 40,
+occupations = 'smearing',
+smearing = 'gaussian',
+degauss = 0.01,
+/
+&ELECTRONS
+conv_thr = 1.0d-12,
+/
+ATOMIC_SPECIES
+Al 26.981539 Al.pz-vbc.UPF
+ATOMIC_POSITIONS alat
+Al 0.00 0.00 0.00
+K_POINTS automatic
+2 2 2 0 0 0 
