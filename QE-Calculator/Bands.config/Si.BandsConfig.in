@@ -1,6 +1,0 @@
-&BANDS
-  prefix='Si',
-  filband='siliconbands.dat',
-  lsym=.true.,
-/
-

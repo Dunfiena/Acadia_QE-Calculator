@@ -1,6 +1,0 @@
-&BANDS
-  prefix='Si',
-  filband='Si.Bands.dat',
-  lsym=.true.,
-/
-
